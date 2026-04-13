@@ -1,11 +1,5 @@
-build:
-	g++ -o main main.cpp data-generator.cpp
-
 build-optimized:
-	g++ -O3 -o main main.cpp data-generator.cpp
+	g++ -std=c++23 -O3 -o main main.cpp data-generator.cpp algorithms-part-1.cpp algorithms-part-2.cpp
 
-run: build
-	./main
-
-run-optimized: build-optimized
-	./main
+build:
+	g++ -std=c++23 -o main main.cpp data-generator.cpp algorithms-part-1.cpp algorithms-part-2.cpp
