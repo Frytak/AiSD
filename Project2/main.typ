@@ -146,13 +146,16 @@ Selection sort polega na wielokrotnym wyszukiwaniu najmniejszego elementu w niep
 - *Najgorszy, średni i najlepszy przypadek:* $O(n^2)$ – jest to cecha szczególna tego algorytmu. Sortowanie przez selekcję jest całkowicie "ślepe" na początkowe ułożenie danych. Niezależnie od tego, czy tablica jest już idealnie posortowana, czy odwrócona, algorytm i tak musi za każdym razem przeiterować przez resztę tablicy, żeby upewnić się, że znalazł najmniejszą wartość. Zawsze wykonuje dokładnie tę samą liczbę porównań elementów.
 
 *Hipotezy badawcze dla poszczególnych scenariuszy*
-+ *Dane losowe:* Oczekiwany czas rzędu $O(n^2)$. Algorytm będzie mało wydajny dla większych tablic, a wykres zależności czasu od rozmiaru narysuje klasyczną parabolę.
-+ *Dane posortowane malejąco (odwrócone):* Czas działania powinien być niemal identyczny jak dla danych losowych. Liczba porównań pozostaje ta sama, więc nie oczekuję tu drastycznych różnic na wykresie.
-+ *Dane posortowane rosnąco:* W przeciwieństwie do Insertion sort, tutaj nie uświadczymy drastycznego spadku czasu. Algorytm i tak nie wie, że tablica jest posortowana, więc wykona pełną pulę porównań ($O(n^2)$). Czas może być co najwyżej odrobinę krótszy z powodu braku fizycznych zamian elementów (swapów) w pamięci, ale wykres na pewno nie będzie liniowy.
++ *Dane losowe:* Oczekiwany czas rzędu $O(n^2)$. Algorytm będzie mało wydajny dla większych tablic.
++ *Dane posortowane malejąco (odwrócone):* Czas działania powinien być niemal identyczny jak dla danych losowych. Liczba porównań pozostaje ta sama, więc nie oczekuję tu drastycznych różnic.
++ *Dane posortowane rosnąco:* W przeciwieństwie do Insertion sort, tutaj nie uświadczymy drastycznego spadku czasu. Algorytm i tak nie wie, że tablica jest posortowana, więc wykona pełną pulę porównań ($O(n^2)$). Czas może być co najwyżej odrobinę krótszy z powodu braku fizycznych zamian elementów (swapów) w pamięci.
 + *Dane prawie posortowane (sąsiednia wymiana):* Ponieważ metoda nie potrafi wykorzystać faktu, że elementy są już blisko swoich miejsc, czas wykonania nie ulegnie poprawie w stosunku do danych losowych.
-+ *Dane prawie posortowane (globalna wymiana):* Wyniki powinny znów pokrywać się z resztą scenariuszy. Zaletą (lub wadą) tego algorytmu jest jego brutalna przewidywalność – niezależnie od tego, co mu podamy, robi swoje i zajmuje mu to mniej więcej tyle samo czasu.
++ *Dane prawie posortowane (globalna wymiana):* Wyniki powinny znów pokrywać się z resztą scenariuszy. Zaletą (lub wadą) tego algorytmu jest to, że niezależnie od tego, co mu podamy, robi swoje i zajmuje mu to mniej więcej tyle samo czasu.
 
 == Bubble sort
+*Zasada działania algorytmu* \
+Bubble sort opiera się na wielokrotnym przechodzeniu przez listę i porównywaniu sąsiadujących ze sobą par elementów. Jeśli znajdują się one w niewłaściwej kolejności (pierwszy jest większy od drugiego), są zamieniane miejscami. Po każdym pełnym przejściu, największy z nieposortowanych elementów zostaje przeniesiony na swoją ostateczną pozycję na końcu tablicy - podobnie jak bąbelek powietrza wynurzający się z wody. W pseudokodzie poniżej jest dodatkowa optymalizacja, która powoduje przedwczesne przerwanie algorytmu gdy nie zostanie wykonana żadna zamiana elementów.
+
 #show: style-algorithm
 #algorithm-figure(
   "Bubble sort",
@@ -166,11 +169,17 @@ Selection sort polega na wielokrotnym wyszukiwaniu najmniejszego elementu w niep
         Assign($i$, $0$)
         While([$i < n - 1$], {
           Assign($j$, $0$)
+          Assign($s$, $0$)
           While([$j < n - i - 1$], {
             If([$"arr"[j] > "arr"[j + 1]$], {
               Line([zamień $"arr"[j]$ z $"arr"[j + 1]$])
+              Assign($s$, $1$)
             })
             Assign($j$, $j + 1$)
+          })
+          LineBreak
+          If([$s = 0$], {
+            Break
           })
           Assign($i$, $i + 1$)
         })
@@ -178,10 +187,23 @@ Selection sort polega na wielokrotnym wyszukiwaniu najmniejszego elementu w niep
     )
   }
 )
-#pagebreak()
+
+*Czasowa złożoność obliczeniowa* \
+- *Najgorszy i średni przypadek:* $O(n^2)$ - wynika to wprost z użycia zagnieżdżonych pętli, z których każda wykonuje się proporcjonalnie do długości tablicy, wymuszając $n(n-1)/2$ porównań.
+- *Najlepszy przypadek:* $O(n)$ algorytm przejdzie przez posortowaną listę raz nie robiąc żadnych zmian dzięki fladze.
+
+*Hipotezy badawcze dla poszczególnych scenariuszy*
++ *Dane losowe:* Czas działania będzie stosunkowo długi przez wysoką liczbę zamian w czasie $O(n^2)$.
++ *Dane posortowane malejąco (odwrócone):* worst-case - powoduje konieczność wykonania maksymalnej możliwej liczby zamian, czas wzrośnie drastycznie.
++ *Dane posortowane rosnąco:* best-case - dzięki fladze sprawdzającej ilość zmian algorytm zrobi tylko $O(n)$ operacji.
++ *Dane prawie posortowane (sąsiednia wymiana):* Dzięki fladze algorytm będzie w stanie skończyć pracę po kilku przejściach. Czas wykonania powinien być znacznie bliższy $O(n)$ niż $O(n^2)$, zbliżony do scenariusza z danymi posortowanymi rosnąco. Jest to jedno z najlepszych wykorzystań tego algorytmu.
++ *Dane prawie posortowane (globalna wymiana):* Losowe zamiany elementów odległych od siebie powodują, że bąbelek musi kilkakrotnie przemierzać tablicę, by przenieść element na właściwe miejsce. Oczekuję czasu gorszego niż przy wymianach sąsiednich, ale nadal zauważalnie lepszego niż dla danych czysto losowych.
 
 = Algorytmy efektywniejsze
 == Quicksort
+*Zasada działania algorytmu* \
+Quicksort to klasyczny algorytm oparty na strategii „dziel i zwyciężaj". Wybierany jest element nazywany pivotem (w poniższej implementacji jest to zawsze ostatni element zakresu), a następnie tablica jest przestawiana tak, by wszystkie elementy mniejsze od pivota znalazły się po jego lewej stronie, a większe - po prawej. Tę operację nazywamy partycjonowaniem. Następnie algorytm rekurencyjnie wywołuje siebie dla lewej i prawej podtablicy. Podział ten trwa aż do momentu, gdy podtablice są jednoelementowe i z definicji posortowane.
+
 #show: style-algorithm
 #algorithm-figure(
   "Quicksort",
@@ -221,7 +243,21 @@ Selection sort polega na wielokrotnym wyszukiwaniu najmniejszego elementu w niep
   }
 )
 
+*Czasowa złożoność obliczeniowa*
+- *Najgorszy przypadek:* $O(n^2)$ – zachodzi, gdy pivot za każdym razem trafia na skrajną pozycję (np. jest minimalnym lub maksymalnym elementem zakresu). Przy zastosowanej strategii wyboru ostatniego elementu jako pivota, dokładnie taki scenariusz wystąpi dla tablic już posortowanych rosnąco lub malejąco.
+- *Średni i najlepszy przypadek:* $O(n log n)$ – gdy pivot dzieli tablicę na w miarę równe części, głębokość rekursji wynosi $O(log n)$, a każdy poziom wymaga liniowej pracy.
+
+*Hipotezy badawcze dla poszczególnych scenariuszy*
++ *Dane losowe:* Oczekuję zachowania bliskiego średniemu przypadkowi $O(n log n)$. Pivot wybierany losowo z perspektywy wartości rzadko będzie skrajny, więc drzewo rekursji powinno być płytkie i zrównoważone.
++ *Dane posortowane malejąco (odwrócone):* worst-case - ostatni element jest zawsze minimum zakresu, więc partycjonowanie tworzy skrajnie niezrównoważone podziały (jeden element po lewej, reszta po prawej). Czas wzrośnie do $O(n^2)$, a wykresy powinny wyraźnie odbiegać od pozostałych scenariuszy.
++ *Dane posortowane rosnąco:* worst-case - analogicznie do scenariusza malejącego, pivot jest zawsze maksimum zakresu, będziemy mieli $O(n^2)$. Spodziewam się czasu zbliżonego do danych malejących, oba znacznie wolniejsze od danych losowych.
++ *Dane prawie posortowane (sąsiednia wymiana):* Nieliczne zakłócenia sprawiają, że pivot rzadziej jest elementem skrajnym, więc partycjonowanie jest nieco bardziej zrównoważone niż w czystym wariancie posortowanym. Oczekuję czasu pośredniego między $O(n^2)$ a $O(n log n)$, ale wciąż bliższego temu gorszemu.
++ *Dane prawie posortowane (globalna wymiana):* Losowe zamiany odległych elementów skuteczniej „dezorganizują" tablicę niż zamiany sąsiednie, dzięki czemu pivot jest lepiej dobrany. Spodziewam się wyniku wyraźnie lepszego niż przy wymianach sąsiednich, zbliżonego do danych losowych.
+
 == Shellsort
+*Zasada działania algorytmu* \
+Shellsort jest uogólnieniem Insertion sorta. Zamiast porównywać i wstawiać sąsiadujące elementy, algorytm operuje na elementach oddalonych o pewien krok (gap). Początkowo krok jest duży (w tej implementacji $n/2$), co pozwala szybko przenosić elementy daleko od ich docelowych pozycji. Następnie krok jest stopniowo zmniejszany o połowę, aż wyniesie 1 - wtedy algorytm staje się zwykłym Insertion sortem, jednak działa on na danych, które są już prawie posortowane po poprzednich przejściach, dzięki czemu wewnętrzna pętla wykonuje bardzo mało przesunięć.
+
 #show: style-algorithm
 #algorithm-figure(
   "Shellsort",
@@ -230,7 +266,7 @@ Selection sort polega na wielokrotnym wyszukiwaniu najmniejszego elementu w niep
   {
     import algorithmic: *
     Procedure(
-      "Shellsort", ("arr", "l", "r"),
+      "Shellsort", ("arr", "n"),
       {
         Assign($"gap"$, $n/2$)
         While([$"gap" > 0$], {
@@ -252,7 +288,22 @@ Selection sort polega na wielokrotnym wyszukiwaniu najmniejszego elementu w niep
   }
 )
 
+*Czasowa złożoność obliczeniowa*
+- *Najgorszy przypadek:* $O(n^2)$ – przy oryginalnej sekwencji Shella (dzielenie przez 2). Istnieją sekwencje kroków (np. Hibbarda czy Pratta), które gwarantują lepszy wynik, jednak nie są tu stosowane.
+- *Średni przypadek:* w praktyce zwykle $O(n^(3/2))$ lub lepiej przy sekwencji binarnej, zdecydowanie szybszy niż zwykłe $O(n^2)$ algorytmy.
+- *Najlepszy przypadek:* $O(n log n)$ – gdy dane są już niemal posortowane, większość przejść nie wykonuje żadnych przestawień.
+
+*Hipotezy badawcze dla poszczególnych scenariuszy*
++ *Dane losowe:* Oczekuję wyraźnie lepszego czasu niż proste algorytmy $O(n^2)$. Duże początkowe kroki szybko redukują nieporządek w tablicy, dzięki czemu ostatni przebieg z krokiem 1 jest niemal natychmiastowy.
++ *Dane posortowane malejąco (odwrócone):* Algorytm radzi sobie dobrze nawet z danymi odwróconymi, bo pierwsze duże kroki skutecznie tasują tablicę. Spodziewam się czasu podobnego do danych losowych, bez drastycznego pogorszenia charakterystycznego dla prostszych algorytmów.
++ *Dane posortowane rosnąco:* best-case — przy każdym kroku wewnętrzna pętla while nie wykonuje żadnych przesunięć, bo elementy odległe o gap są już we właściwej kolejności. Czas powinien być zauważalnie krótszy niż dla danych losowych.
++ *Dane prawie posortowane (sąsiednia wymiana):* Bardzo bliskie scenariuszowi rosnącemu. Nieliczne zaburzenia powodują znikome dodatkowe przestawienia przy małych krokach. Spodziewam się czasu praktycznie identycznego z wariantem posortowanym rosnąco.
++ *Dane prawie posortowane (globalna wymiana):* Elementy oddalone od swoich docelowych pozycji są szybko przemieszczane przez duże kroki. Oczekuję wyników bardzo zbliżonych do danych losowych, nieznacznie lepszych dzięki ogólnie mniejszemu nieporządkowi.
+
 == Heapsort
+*Zasada działania algorytmu* \
+Heapsort działa dwuetapowo. W pierwszym etapie tablica jest przekształcana w strukturę zwaną kopcem maksymalnym (max-heap), czyli drzewo binarne, w którym każdy węzeł jest większy od swoich dzieci. Gwarantuje to, że korzeń (pierwszy element tablicy) zawsze zawiera maksimum. W drugim etapie algorytm wielokrotnie zamienia korzeń z ostatnim elementem kopca (odkładając tym samym maksimum na właściwe miejsce na końcu tablicy), a następnie przywraca własność kopca dla zmniejszonej o jeden struktury. Procedura `heapify` realizuje właśnie to przywracanie, opadając w dół drzewa.
+
 #show: style-algorithm
 #algorithm-figure(
   "Heapsort",
@@ -284,7 +335,7 @@ Selection sort polega na wielokrotnym wyszukiwaniu najmniejszego elementu w niep
     )
     LineBreak
     Procedure(
-      "Heapsort", ("arr", "l", "r"),
+      "Heapsort", ("arr", "n"),
       {
         Assign($i$, $n/2 - 1$)
         While([$i >= 0$], {
@@ -303,7 +354,16 @@ Selection sort polega na wielokrotnym wyszukiwaniu najmniejszego elementu w niep
     )
   }
 )
-#pagebreak()
+
+*Czasowa złożoność obliczeniowa*
+- *Najgorszy, średni i najlepszy przypadek:* $O(n log n)$ - budowanie kopca kosztuje $O(n)$, a każde z $n$ wywołań `heapify` podczas wyciągania elementów kosztuje $O(log n)$. Co istotne, Heapsort jest algorytmem nieadaptywnym - jego złożoność nie zmienia się w zależności od ułożenia danych wejściowych.
+
+*Hipotezy badawcze dla poszczególnych scenariuszy*
++ *Dane losowe:* Oczekuję stabilnego czasu rzędu $O(n log n)$. Heapsort powinien być porównywalny z Quicksortem dla danych losowych, choć w praktyce bywa nieco wolniejszy ze względu na gorszy współczynnik stały i mniej przyjazny wzorzec dostępu do pamięci co będzie powodowało chybienie pamięci cache.
++ *Dane posortowane malejąco (odwrócone):* W przeciwieństwie do Quicksorta, Heapsort nie ma tutaj problemu. Budowanie kopca z odwróconej tablicy przebiega sprawnie, a dalsze etapy sortowania są identyczne jak zawsze. Oczekuję czasu zbliżonego do danych losowych.
++ *Dane posortowane rosnąco:* Analogicznie, algorytm wykona tę samą pracę niezależnie od wejścia. Dane posortowane rosnąco mogą jednak powodować nieco więcej zamian przy budowaniu kopca, co może skutkować minimalnie gorszym czasem niż dla danych losowych.
++ *Dane prawie posortowane (sąsiednia wymiana):* Nieadaptywność Heapsortu ujawnia się tutaj jako słabość. Algorytm nie potrafi wykorzystać faktu, że dane są niemal posortowane. Oczekuję czasu bardzo zbliżonego do scenariusza z danymi losowymi.
++ *Dane prawie posortowane (globalna wymiana):* Tak samo jak powyżej, Heapsort będzie zachowywał się praktycznie identycznie we wszystkich pięciu scenariuszach. Wykresy powinny być niemal równoległe i bliskie sobie wartościami.
 
 = Algorytmy niekonwencjonalne
 == Bogosort
