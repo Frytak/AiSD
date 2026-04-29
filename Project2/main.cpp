@@ -15,6 +15,7 @@
 #include "./data-generator.hpp"
 #include "./algorithms-part-1.hpp"
 #include "./algorithms-part-2.hpp"
+#include "./algorithms-part-3.hpp"
 
 
 std::chrono::nanoseconds measure_time(std::function<void (std::vector<int> &arr)> sort, std::vector<int> &arr) {
@@ -110,11 +111,11 @@ void test_and_save_results_to_csv(const std::string &data_name, const std::strin
         return;
     }
 
-    results_file << "Size,Take,Duration\n";
+    results_file << "Take,Duration\n";
     for (int take = -10; take < 10; take++) {
         auto arr = data;
         auto duration = measure_time(sort, arr);
-        results_file << size << "," << take << "," << duration << "\n";
+        results_file << take << "," << duration.count() << "\n";
     }
     results_file.close();
 
@@ -131,7 +132,7 @@ int main(int argc, char *argv[]) {
 
     int start_magnitude = 1;
     int end_magnitude = 8;
-    int sub[3] = { 1, 2, 5 };
+    std::vector<int> sub = { 1, 2, 5 };
 
     std::string_view command = std::string_view(argv[1]);
 
@@ -170,6 +171,9 @@ int main(int argc, char *argv[]) {
             std::pair("quick-sort", &quick_sort),
             std::pair("shell-sort", &shell_sort),
             std::pair("heap-sort", &heap_sort),
+            std::pair("stooge-sort", &stooge_sort),
+            std::pair("thanos-sort", &thanos_sort),
+            std::pair("stalin-sort", &stalin_sort),
         };
 
         std::vector<std::string> data_sets = {
@@ -194,6 +198,13 @@ int main(int argc, char *argv[]) {
                     return data_set != data_set_arg; 
                 });
             }
+        }
+
+        if (argc > 6) {
+            int sub_num = 0;
+            std::string_view sub_arg(argv[6]);
+            auto result = std::from_chars(sub_arg.data(), sub_arg.data() + sub_arg.size(), sub_num);
+            sub = {sub_num};
         }
 
         for (int magnitude = start_magnitude; magnitude <= end_magnitude; magnitude++) {
