@@ -33,7 +33,7 @@
                         name = "gcc";
 
                         packages = with pkgs; [
-                            gcc
+                            gcc15
                             pkg-config
                             typst
                             cmake
