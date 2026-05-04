@@ -39,10 +39,14 @@ void GenerateCommand(args::Subparser &parser) {
     DataGenerator data_generator{};
 
     for (auto &&magnitude = start_magnitude.Get(); magnitude <= end_magnitude.Get(); magnitude++) {
+        std::cout << "\x1b[1m\x1b[34m=== Generowanie danych dla " << magnitude << " potęgi 10 ===\x1b[0m" << std::endl;
         for (auto &&sub_step : sub_steps) {
             int amount = std::pow(10, magnitude) * sub_step;
+            std::cout << "\x1b[1m\x1b[33mIlość punktów: " << amount << "\x1b[0m" << std::endl;
 
             for (auto &&scenario : scenarios) {
+                std::cout << "\x1b[1mScenariusz: " << scenario << "\x1b[0m" << std::endl;
+
                 Points points;
                 if (scenario == "random") {
                     points = data_generator.random(amount);
@@ -72,13 +76,18 @@ void TestCommand(args::Subparser &parser) {
     algorithms->erase(std::unique(algorithms->begin(), algorithms->end()), algorithms->end());
 
     for (auto &&magnitude = start_magnitude.Get(); magnitude <= end_magnitude.Get(); magnitude++) {
+        std::cout << "\x1b[1m\x1b[34m=== Testowanie dla " << magnitude << " potęgi 10 ===\x1b[0m" << std::endl;
         for (auto &&sub_step : sub_steps) {
             int amount = std::pow(10, magnitude) * sub_step;
+            std::cout << "\x1b[1m\x1b[33mIlość punktów: " << amount << "\x1b[0m" << std::endl;
 
             for (auto &&scenario : scenarios) {
+                std::cout << "\x1b[1mScenariusz: " << scenario << "\x1b[0m" << std::endl;
                 Points points = csv::read_points(std::format("./data/{}/{}.csv", scenario, amount));
                 
                 for (auto &&algorithm : algorithms) {
+                    std::cout << "\t" << algorithm << " - " << std::flush;
+
                     std::function<void (Points& points)> algorithm_func;
                     if (algorithm == "graham-scan") {
                         algorithm_func = [](Points& points) { graham_scan(points); };
@@ -95,7 +104,7 @@ void TestCommand(args::Subparser &parser) {
                         continue;
                     }
 
-                    std::ofstream file(std::format("./results/{}/{}/{}.csv", scenario, algorithm, amount));
+                    std::ofstream file(std::format("./results/{}/{}/{}.csv", algorithm, scenario, amount));
                     file << "Take,Duration(ns)" << std::endl;
 
                     for (int take = -10; take < 100; take++) {
@@ -105,10 +114,19 @@ void TestCommand(args::Subparser &parser) {
                     }
 
                     file.close();
+                    std::cout << "\x1b[32mdone\x1b[0m" << std::endl;
                 }
             }
         }
     }
+}
+
+void print_points(const Points& points) {
+    std::cout << "[";
+    for (int i = 0; i < points.size() - 1; i++) {
+        std::cout << "(" << points[i].x << ", " << points[i].y << "), ";
+    }
+    std::cout << "(" << points[points.size()-1].x << ", " << points[points.size()-1].y << ")]";
 }
 
 int main(int argc, char *argv[]) {
